@@ -18,6 +18,12 @@
         this.line = 1;
         this.column = 0;
         this.pos = 0;
+
+        ['punctuators', 'operators', 'keywords', 'identifierStart', 'identifierPart'].forEach(function(option) {
+            if (options[option]) {
+                this[option] = options[option];
+            }
+        }, this);
     };
 
     LexicalAnalyzer.prototype.token = function() {
@@ -38,7 +44,7 @@
         return this.source.charAt(this.pos + (at || 0));
     };
 
-    LexicalAnalyzer.prototype.skipWhiteSpacesAndComments = function() {
+    LexicalAnalyzer.prototype.skipWhiteSpaces = function() {
         for(; ; this.consume()) {
             if (this.isLineTerminator(this.peek())) {
                 ++this.line;
@@ -47,30 +53,6 @@
                 continue;
             } else if (this.isWhiteSpace(this.peek())) {
                 continue;
-            } else if (this.peek() === '/' && this.peek(1) === '/') {
-                while(!this.isLineTerminator(this.peek())) {
-                    this.consume();
-                }
-
-                ++this.line;
-                this.column = 0;
-
-                this.consume();
-            } else if (this.peek() === '/' && this.peek(1) === '*') {
-                this.consume();
-                this.consume();
-
-                do {
-                    if (this.isLineTerminator(this.peek())) {
-                        ++this.line;
-                        this.column = 0;
-                    }
-
-                    this.consume();
-                } while (this.peek() !== '*' && this.peek(1) !== '/');
-
-                this.consume();
-                this.consume();
             } else {
                 break;
             }
@@ -112,12 +94,14 @@
         return /\d/.test(ch);
     };
 
+    LexicalAnalyzer.prototype.identifierStart = /[$_a-zA-Z]/;
     LexicalAnalyzer.prototype.isIdentifierStart = function(ch) {
-        return /[$_a-zA-Z]/.test(ch);
+        return this.identifierStart.test(ch);
     };
 
+    LexicalAnalyzer.prototype.identifierPart = /([$_a-zA-Z]|[0-9])/;
     LexicalAnalyzer.prototype.isIdentifierPart = function(ch) {
-        return /([$_a-zA-Z]|[0-9])/.test(ch);
+        return this.identifierPart.test(ch);
     };
 
     LexicalAnalyzer.prototype.loc = function() {
@@ -128,7 +112,7 @@
     };
 
     LexicalAnalyzer.prototype.getNextToken = function() {
-        this.skipWhiteSpacesAndComments();
+        this.skipWhiteSpaces();
 
         var token = this.token();
 
@@ -137,7 +121,36 @@
             return token;
         }
 
-        if (this.isDecimalDigit(this.peek())) {
+        if (this.peek() === '/' && this.peek(1) === '/') {
+            this.consume();
+            this.consume();
+
+            var comment = [];
+
+            while(!this.isLineTerminator(this.peek())) {
+                comment.push(this.consume());
+            }
+
+            token.lexeme = comment.join('');
+            token.tag = 'comment';
+        } else if (this.peek() === '/' && this.peek(1) === '*') {
+            this.consume();
+            this.consume();
+
+            var comment = [];
+
+            do {
+                comment.push(this.consume());
+            } while (this.peek() !== '*' && this.peek(1) !== '/');
+
+            this.consume();
+            this.consume();
+
+            token.lexeme = comment.join('');
+            token.tag = 'comment';
+        }
+
+        if (this.isDecimalDigit(this.peek()) && !token.tag) {
             var v = 0;
             
             do {
