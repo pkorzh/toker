@@ -1,0 +1,11 @@
+{
+  "name": "toker",
+  "version": "1.0.0",
+  "description": "General purpose lexical analizer",
+  "main": "toker.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Platon Korzh <platon@korzh.io>",
+  "license": "ISC"
+}
