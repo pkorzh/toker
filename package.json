@@ -1,10 +1,14 @@
 {
   "name": "toker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "General purpose lexical analizer",
   "main": "toker.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:pkorzh/toker.git"
   },
   "author": "Platon Korzh <platon@korzh.io>",
   "license": "ISC"
