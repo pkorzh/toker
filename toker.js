@@ -111,6 +111,17 @@
         };
     };
 
+    LexicalAnalyzer.prototype.getTokens = function() {
+        var tokens = [],
+            token;
+
+        while((token = lex.getNextToken()).tag !== 'eof') {
+            tokens.push(token);
+        }
+
+        return tokens;
+    };
+
     LexicalAnalyzer.prototype.getNextToken = function() {
         this.skipWhiteSpaces();
 

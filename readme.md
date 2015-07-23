@@ -1,3 +1,3 @@
 #toker
 
-General purpose lexical analizer
+General purpose lexical analyzer
