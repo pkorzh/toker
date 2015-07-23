@@ -74,12 +74,12 @@
         '*', '/=', '/', '%=', '%', '&&', '&=', '&', '||', '|=', '|', '^=', '^', '~'
     ];
     LexicalAnalyzer.prototype.isOperator = function(w) {
-        return this.operators.indexOf(w) == -1;
+        return this.operators.indexOf(w) !== -1;
     };
 
     LexicalAnalyzer.prototype.punctuators = ['.', '(', ')', ';', ',', '{', '}', '[', ']', ':', '?', '~'];
     LexicalAnalyzer.prototype.isPunctuator = function(w) {
-        return this.punctuators.indexOf(w) == -1;
+        return this.punctuators.indexOf(w) !== -1;
     };
 
     LexicalAnalyzer.prototype.isWhiteSpace = function(ch) {
