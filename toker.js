@@ -20,8 +20,8 @@
         this.pos = 0;
 
         ['punctuators', 'operators', 'keywords', 'identifierStart', 'identifierPart'].forEach(function(option) {
-            if (options[option]) {
-                this[option] = options[option];
+            if (this.options[option]) {
+                this[option] = this.options[option];
             }
         }, this);
     };
