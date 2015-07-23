@@ -266,7 +266,8 @@
 
             operator = operator.join('');
 
-            token.lexeme = token.tag = operator;
+            token.lexeme = operator;
+            token.tag = 'operator';
         }
 
         if (!token.tag) {
