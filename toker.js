@@ -115,7 +115,7 @@
         var tokens = [],
             token;
 
-        while((token = lex.getNextToken()).tag !== 'eof') {
+        while((token = this.getNextToken()).tag !== 'eof') {
             tokens.push(token);
         }
 
