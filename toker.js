@@ -71,10 +71,16 @@
     LexicalAnalyzer.prototype.operators = [
         '{', '}', '(', ')', '[', ']', '.', ';', ',', '?', '', '===', '==', '=', '!==', '!=', '!', '<<=',
         '<<', '<=', '<', '>>>=', '>>>', '>>=', '>>', '>=', '>', '+=', '++', '+', '-=', '--', '-', '*=',
-        '*', '/=', '/', '%=', '%', '&&', '&=', '&', '||', '|=', '|', '^=', '^', '~'
+        '*', '/=', '/', '%=', '%', '&&', '&=', '&', '||', '|=', '|', '^=', '^', '~', '!important', 'pm', 'em', 'rem'
     ];
-    LexicalAnalyzer.prototype.isOperator = function(w) {
-        return this.operators.indexOf(w) !== -1;
+    LexicalAnalyzer.prototype.isOperatorPart = function(w) {
+        for (var i = this.operators.length - 1; i >= 0; i--) {
+            if (this.operators[i].indexOf(w) !== -1) {
+                return true;
+            }
+        };
+
+        return false;
     };
 
     LexicalAnalyzer.prototype.punctuators = ['.', '(', ')', ';', ',', '{', '}', '[', ']', ':', '?', '~'];
@@ -267,13 +273,13 @@
             token.tag = 'regularExpressionLiteral';
         }
 
-        if (this.isOperator(this.peek()) && !this.isPunctuator(this.peek()) && !token.tag) {
+        if (this.isOperatorPart(this.peek()) && !this.isPunctuator(this.peek()) && !token.tag) {
             var operator = [];
 
             do {
                 operator.push(this.peek());
                 this.consume();
-            } while (this.isOperator(this.peek()) && !this.isPunctuator(this.peek()));
+            } while (this.isOperatorPart(this.peek()) && !this.isPunctuator(this.peek()));
 
             operator = operator.join('');
 
