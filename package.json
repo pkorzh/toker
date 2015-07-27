@@ -1,6 +1,6 @@
 {
   "name": "toker",
-  "version": "1.1.6",
+  "version": "1.2.6",
   "description": "General purpose lexical analizer",
   "main": "toker.js",
   "scripts": {

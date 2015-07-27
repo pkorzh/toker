@@ -49,10 +49,8 @@
             if (this.isLineTerminator(this.peek())) {
                 ++this.line;
                 this.column = 0;
-
-                continue;
             } else if (this.isWhiteSpace(this.peek())) {
-                continue;
+                ++this.column;
             } else {
                 break;
             }
@@ -60,8 +58,8 @@
     };
 
     LexicalAnalyzer.prototype.keywords = [
-        'break', 'case', 'catch', 'continue', 'debugger', 'default', 'delete', 'do', 'else', 'finally', 'for', 
-        'function', 'if', 'in', 'instanceof', 'new', 'return', 'switch', 'this', 'throw', 'try', 'typeof', 'var', 
+        'break', 'case', 'catch', 'continue', 'debugger', 'default', 'delete', 'do', 'else', 'finally', 'for',
+        'function', 'if', 'in', 'instanceof', 'new', 'return', 'switch', 'this', 'throw', 'try', 'typeof', 'var',
         'void', 'while', 'with', 'class', 'const', 'enum', 'export', 'extends', 'import', 'super'
     ];
     LexicalAnalyzer.prototype.isKeyword = function(w) {
@@ -135,10 +133,9 @@
 
         if (this.pos >= this.length) {
             token.lexeme = token.tag = 'eof';
-            return token;
         }
 
-        if (this.peek() === '/' && this.peek(1) === '/') {
+        if (this.peek() === '/' && this.peek(1) === '/' && !token.tag) {
             this.consume();
             this.consume();
 
@@ -150,15 +147,17 @@
 
             token.lexeme = comment.join('');
             token.tag = 'comment';
-        } else if (this.peek() === '/' && this.peek(1) === '*') {
+        }
+
+        if (this.peek() === '/' && this.peek(1) === '*' && !token.tag) {
             this.consume();
             this.consume();
 
             var comment = [];
 
-            do {
+            while (!(this.peek() === '*' && this.peek(1) === '/')) {
                 comment.push(this.consume());
-            } while (this.peek() !== '*' && this.peek(1) !== '/');
+            };
 
             this.consume();
             this.consume();
@@ -169,7 +168,7 @@
 
         if (this.isDecimalDigit(this.peek()) && !token.tag) {
             var v = 0;
-            
+
             do {
                 v = 10 * v + parseInt(this.peek(), 10);
                 this.consume();
@@ -256,22 +255,6 @@
             token.tag = 'stringLiteral';
         }
 
-        if (this.peek() === '/' && this.peek(1) !== '/' && !token.tag) {
-            var regularExpression = [];
-
-            do {
-                regularExpression.push(this.peek());
-                this.consume();
-            } while (this.peek() !== '/');
-
-            regularExpression.push(this.peek());
-            this.consume();
-
-            regularExpression = regularExpression.join('');
-
-            token.lexeme = regularExpression;
-            token.tag = 'regularExpressionLiteral';
-        }
 
         if (this.isOperatorPart(this.peek()) && !this.isPunctuator(this.peek()) && !token.tag) {
             var operator = [];
@@ -288,8 +271,7 @@
         }
 
         if (!token.tag) {
-            token.lexeme = token.tag = this.peek();
-            this.consume();
+            token.lexeme = token.tag = this.consume();
         }
 
         token.loc.end = this.loc();
